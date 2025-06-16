@@ -2,7 +2,8 @@ pipeline {
   agent {
     docker {
       image '210920/maven-jdk17-agent:v1'
-    args '-u root --entrypoint tail -- /dev/null -v /var/run/docker.sock:/var/run/docker.sock -w $PWD -v $PWD:$PWD -v $PWD@tmp:$PWD@tmp'    }
+    args '--user root --entrypoint=tail -v /var/run/docker.sock:/var/run/docker.sock -- /dev/null'
+    }
   }
   stages {
     stage('Checkout') {
