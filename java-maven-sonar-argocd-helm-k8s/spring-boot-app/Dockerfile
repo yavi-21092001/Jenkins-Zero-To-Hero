@@ -8,6 +8,7 @@ ARG artifact=target/spring-boot-web.jar
 WORKDIR /opt/app
 
 COPY ${artifact} app.jar
+COPY wrapper-entrypoint.sh /entrypoint.sh
 
 # This should not be changed
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["/entrypoint.sh"]
