@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image '210920/maven-jdk17-agent:v1'
+      image '210920/maven-jdk17-agent:jenkins-friendly'
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
       reuseNode true
     }
