@@ -10,6 +10,7 @@ WORKDIR /opt/app
 COPY ${artifact} app.jar
 COPY wrapper-entrypoint.sh /entrypoint.sh
 
-# This should not be changed
-chmod +x entrypoint-wrapper.sh
+# Make sure the entrypoint script is executable
+RUN chmod +x /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
