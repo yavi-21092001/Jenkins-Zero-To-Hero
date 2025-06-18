@@ -1,0 +1,42 @@
+node {
+  checkout scm
+
+  docker.image('210920/maven-jdk17-agent:jenkins-friendly').inside('--user root -v /var/run/docker.sock:/var/run/docker.sock') {
+    stage('Build and Test') {
+      sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+    }
+
+    stage('Static Code Analysis') {
+      withEnv(["SONAR_URL=http://51.21.223.86:9000"]) {
+        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+        }
+      }
+    }
+
+    stage('Build and Push Docker Image') {
+      withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        def tag = "210920/ultimate-cicd:${env.BUILD_NUMBER}"
+        sh """
+          cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
+          docker build -t ${tag} .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker push ${tag}
+        """
+      }
+    }
+
+    stage('Update Deployment File') {
+      withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+        sh """
+          git config user.email "yatharthchoudhary1@gmail.com"
+          git config user.name "yavi-21092001"
+          sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+          git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+          git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+          git push https://${GITHUB_TOKEN}@github.com/yavi-21092001/Jenkins-Zero-To-Hero HEAD:main
+        """
+      }
+    }
+  }
+}
