@@ -11,4 +11,5 @@ COPY ${artifact} app.jar
 COPY wrapper-entrypoint.sh /entrypoint.sh
 
 # This should not be changed
+chmod +x entrypoint-wrapper.sh
 ENTRYPOINT ["/entrypoint.sh"]
