@@ -6,6 +6,9 @@ FROM eclipse-temurin:17-jre-alpine
 USER root
 RUN apk add --no-cache docker-cli
 
+RUN apk add --no-cache bash coreutils procps
+
+
 # Simply the artifact path
 ARG artifact=target/spring-boot-web.jar
 
