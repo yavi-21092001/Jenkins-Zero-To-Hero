@@ -2,6 +2,10 @@
 # But make sure to use the correct version of Java
 FROM eclipse-temurin:17-jre-alpine
 
+# Install Docker CLI
+USER root
+RUN apk add --no-cache docker-cli
+
 # Simply the artifact path
 ARG artifact=target/spring-boot-web.jar
 
