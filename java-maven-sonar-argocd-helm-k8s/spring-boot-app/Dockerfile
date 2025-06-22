@@ -7,7 +7,7 @@ USER root
 RUN apk add --no-cache docker-cli
 
 RUN apk add --no-cache bash coreutils procps
-
+RUN apk add --no-cache git 
 
 # Simply the artifact path
 ARG artifact=target/spring-boot-web.jar
